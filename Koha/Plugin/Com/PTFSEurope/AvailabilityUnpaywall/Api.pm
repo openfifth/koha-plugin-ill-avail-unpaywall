@@ -58,49 +58,42 @@ sub search {
     # Get the DOI
     my $doi = $metadata->{doi};
 
-    my $ua = LWP::UserAgent->new;
-    my $response = $ua->request(GET "${base_url}${doi}?email=$email");
+    my $start  = $c->validation->param('start')  || 0;
+    my $length = $c->validation->param('length') // 20;
 
-    if ( $response->is_success ) {
-        my $to_send = [];
-        # Parse the Unpaywall response and prepare our response
-        my $data = decode_json($response->decoded_content);
-        if ($data->{is_oa}) {
-            my @authors = map {
-                $_->{given} . ' ' . $_->{family}
-            } @{$data->{z_authors}};
-            push @{$to_send}, {
-                title  => $data->{title},
-                author => join(', ', @authors),
-                url    => $data->{best_oa_location}->{url_for_landing_page},
-                source => $data->{best_oa_location}->{repository_institution},
-                date   => $data->{best_oa_location}->{published_date}
-            };
-        } else {
-            $to_send = [];
-        }
-
-        return $c->render(
-            status => 200,
-            openapi => {
-                results => {
-                    source_url => 'https://unpaywall.org/products/simple-query-tool',
-                    search_results => $to_send,
-                    errors => []
-                }
-            }
-        );
-    } else {
-        return $c->render(
-            status => 200,
-            openapi => {
-                results => {
-                    search_results => [],
-                    errors => [ { message => $response->status_line } ]
-                }
-            }
-        );
+    my @all;
+    for my $i (1..40) {
+        push @all, {
+            title  => "Mock title $i",
+            author => "Mock Author $i",
+            url    => "https://example.com/article/$i",
+            source => "Mock Source $i",
+            date   => "2024-0${\( ($i % 12) + 1 )}-01"
+        };
     }
+
+    my $total = scalar @all;
+    my @page;
+    if ( $length == -1 ) {
+        @page = @all;
+    } else {
+        my $end = $start + $length - 1;
+        $end = $total - 1 if $end >= $total;
+        @page = @all[ $start .. $end ];
+    }
+
+    return $c->render(
+        status => 200,
+        openapi => {
+            recordsTotal    => $total,
+            recordsFiltered => $total,
+            results => {
+                source_url     => 'https://unpaywall.org/products/simple-query-tool',
+                search_results => \@page,
+                errors         => []
+            }
+        }
+    );
 
 }
 
