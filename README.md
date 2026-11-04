@@ -31,3 +31,7 @@ This method is required. It receives all the metadata pertaining to the item bei
 
 `Api.pm`
 This is the module that handles the endpoint specified in `ill_availability_services`. It works in exactly the same way as any other Koha API endpoint. The JSON object it returns should contain a `search_results` object which is an array of results. Each result can contain the properties `source`, `title`, `author`, `isbn`, `issn`, `date` & `url`.
+
+## Licence
+
+This plugin is licensed under the GNU Affero General Public License v3.0 or later (`AGPL-3.0-or-later`). See [LICENSE](LICENSE).
