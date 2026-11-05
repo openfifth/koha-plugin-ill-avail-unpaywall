@@ -32,13 +32,13 @@ use Digest::MD5 qw( md5_hex );
 use MIME::Base64 qw( decode_base64 );
 use URI::Escape qw ( uri_unescape );
 
-our $VERSION         = '1.0.2';
+our $VERSION         = '1.0.3';
 
 our $metadata = {
     name            => 'ILL availability - Unpaywall',
     author          => 'Andrew Isherwood',
     date_authored   => '2019-07-09',
-    date_updated    => "2020-02-17",
+    date_updated    => '2026-11-05',
     minimum_version => '18.11.00.000',
     maximum_version => undef,
     version         => $VERSION,
